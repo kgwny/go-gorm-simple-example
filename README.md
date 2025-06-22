@@ -7,6 +7,11 @@
 go mod init github.com/kgwny/go-gorm-simple-example
 ```
 
+### echo フレームワークもインストールする
+```
+go get github.com/labstack/echo/v4
+```
+
 ### godotenv のインストール -> .env による環境変数の取り扱いを可能にする
 ```
 go get github.com/joho/godotenv
