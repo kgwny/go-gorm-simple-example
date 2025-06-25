@@ -7,3 +7,8 @@ air は Docker を用いて Go による開発を行う際、ホットリロー�
 ```
 docker compose up
 ```
+
+### dockerコンテナのシェルにアクセス
+```
+docker-compose exec -it api sh
+```
