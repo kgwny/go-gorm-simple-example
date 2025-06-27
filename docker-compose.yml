@@ -5,31 +5,15 @@ services:
       - "8080:8080"
     volumes:
       - .:/app
-  db:
-    container_name: sample-db
-    # イメージの指定(docker-hubから直接流用)
-    image: 'mysql:8.0.0'
-    # DBデータ保持用のボリュームをバインド
-    volumes: 
-      - sample_db_data:/var/lib/mysql
-    env_file:
-      - ./env/db.env # 環境変数ファイルへのパス
-  # API用コンテナ作成
-  api:
-    container_name: sample-api
-    build: . # イメージのビルドに使用するDockerfileへの相対パス
+  mysql:
+    image: mysql:8.0.29
+    platform: linux/amd64
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: first
     volumes:
-    # バインドマウント
-      - type: bind 
-        source: ./app
-        target: /app
+      - db-vol:/var/lib/mysql
     ports:
-      - 5050:5050
-    env_file:
-      - ./env/api.env
-    # 依存するサービス名(先に起動させたいサービス)
-    depends_on:
-      - db
-# DBデータ保持用のボリューム
+      - "3306:3306"
 volumes:
-  sample_db_data:
+  db-vol:
