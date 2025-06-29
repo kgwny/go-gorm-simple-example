@@ -33,6 +33,4 @@ go.work.sum
 
 # etc
 .DS_Store
-post_cmd.txt
-pre_cmd.txt
 tmp/

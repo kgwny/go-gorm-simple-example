@@ -1,19 +1,33 @@
 services:
-  go:
-    build: .
-    ports:
-      - "8080:8080"
+  db:
+    container_name: sample-db
+    image: 'mysql:8.0'
+    platform: linux/x86_64
     volumes:
-      - .:/app
-  mysql:
-    image: mysql:8.0.29
-    platform: linux/amd64
-    environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-      MYSQL_DATABASE: first
-    volumes:
-      - db-vol:/var/lib/mysql
+      - ./db/conf.d:/etc/mysql/conf.d
+      - ./db/initdb.d:/docker-entrypoint-initdb.d
+      - sample_db_data:/var/lib/mysql # DBデータ保持用のボリュームをバインド
+    env_file:
+      - ./env/db.env # 環境変数ファイルへのパス
     ports:
-      - "3306:3306"
+      - 3306:3306
+
+  api:
+    container_name: sample-api
+    build: # イメージのビルドに使用するDockerfileへの相対パス
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - type: bind # バインドマウント
+        source: ./app
+        target: /app
+    ports:
+      - 8080:8080
+    env_file:
+      - ./env/api.env
+    depends_on:
+      - db # 依存するサービス名（先に起動させたいサービス）
+    command: ["/app/wait-for-it.sh", "db:3306", "--timeout=30", "--", "air", "-c", ".air.toml"]
+
 volumes:
-  db-vol:
+  sample_db_data: # DBデータ保持用のボリューム
